@@ -14,10 +14,10 @@ public class WeatherAggregationService implements WeatherService {
     private final List<WeatherService> weatherServices;
 
     @Override
-    public List<Weather> gWeather() {
+    public List<Weather> gWeather(String city) {
         return weatherServices
                 .stream()
-                .flatMap(ws -> ws.gWeather().stream())
+                .flatMap(ws -> ws.gWeather(city).stream())
                 .collect(Collectors.toList());
     }
 }

@@ -20,19 +20,16 @@ public class OpenWeatherService implements WeatherService {
     @Value("${app.openweather-api-key}")
     private String apiKey;
 
-    @Value("${app.city-name}")
-    private String cityName;
-
     @Override
-    public List<Weather> gWeather() {
+    public List<Weather> gWeather(String city) {
         val url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&lang=ru&appid=%s",
-                cityName, apiKey);
+                city, apiKey);
 
         val dto = restTemplate.getForObject(url, OpenWeatherDto.class);
-        return Collections.singletonList(toModel(dto));
+        return Collections.singletonList(toModel(dto, city));
     }
 
-    private Weather toModel(OpenWeatherDto dto) {
-        return new Weather("OpenWeather", cityName, dto.getMain().getTemperature());
+    private Weather toModel(OpenWeatherDto dto, String city) {
+        return new Weather("OpenWeather", city, dto.getMain().getTemperature());
     }
 }

@@ -4,6 +4,7 @@ import my.company.weatherapp.model.Weather;
 import my.company.weatherapp.service.WeatherService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,7 +19,19 @@ public class WeatherRestController {
     }
 
     @GetMapping("/weather")
-    public List<Weather> getWeather() {
-        return weatherService.gWeather();
+    public List<Weather> getMinskWeather() {
+        return weatherService.gWeather("Minsk");
+    }
+
+    @GetMapping("/weather/{city}")
+    public List<Weather> getWeather(@PathVariable String city) {
+        if (!isCityName(city)) {
+            throw new CityNameException();
+        }
+        return weatherService.gWeather(city);
+    }
+
+    private boolean isCityName(String city) {
+        return city.chars().allMatch(Character::isLetter);
     }
 }
