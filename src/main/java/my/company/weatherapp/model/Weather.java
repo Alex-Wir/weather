@@ -8,6 +8,9 @@ import lombok.Data;
 public class Weather {
 
     private final String source;
-    private final String city;
     private final String temperature;
+
+    public static Weather empty() {
+        return new Weather("", "");
+    }
 }

@@ -7,16 +7,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class YandexWeatherService implements WeatherService {
 
     @SneakyThrows
     @Override
-    public List<Weather> gWeather(String city) {
-        Document doc = Jsoup.connect(String.format("https://yandex.ru/pogoda/%s", city)).get();
-        Element tempValue = doc.selectFirst(".temp__value");
-        return List.of(new Weather("YandexWeather", city, tempValue.text()));
+    public Weather getWeather(String city) {
+        try {
+            Document doc = Jsoup.connect(String.format("https://yandex.ru/pogoda/%s", city)).get();
+            Element tempValue = doc.selectFirst(".temp__value");
+            return new Weather("YandexWeather", tempValue.text());
+        } catch (Exception e) {
+            return Weather.empty();
+        }
     }
 }

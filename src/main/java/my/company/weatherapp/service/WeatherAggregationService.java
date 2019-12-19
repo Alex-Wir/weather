@@ -1,6 +1,7 @@
 package my.company.weatherapp.service;
 
 import lombok.RequiredArgsConstructor;
+import my.company.weatherapp.model.CityWeather;
 import my.company.weatherapp.model.Weather;
 import org.springframework.stereotype.Service;
 
@@ -9,15 +10,20 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class WeatherAggregationService implements WeatherService {
+public class WeatherAggregationService {
 
     private final List<WeatherService> weatherServices;
 
-    @Override
-    public List<Weather> gWeather(String city) {
-        return weatherServices
+    public CityWeather getWeather(String city) {
+        List<Weather> weatherList = weatherServices
                 .stream()
-                .flatMap(ws -> ws.gWeather(city).stream())
+                .map(ws -> ws.getWeather(city))
+                .filter(this::notEmpty)
                 .collect(Collectors.toList());
+        return new CityWeather(city, weatherList);
+    }
+
+    private boolean notEmpty(Weather weather) {
+        return !weather.equals(Weather.empty());
     }
 }

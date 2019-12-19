@@ -2,14 +2,11 @@ package my.company.weatherapp.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import my.company.weatherapp.model.Weather;
 import my.company.weatherapp.dto.OpenWeatherDto;
+import my.company.weatherapp.model.Weather;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Collections;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -21,15 +18,18 @@ public class OpenWeatherService implements WeatherService {
     private String apiKey;
 
     @Override
-    public List<Weather> gWeather(String city) {
-        val url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&lang=ru&appid=%s",
-                city, apiKey);
-
-        val dto = restTemplate.getForObject(url, OpenWeatherDto.class);
-        return Collections.singletonList(toModel(dto, city));
+    public Weather getWeather(String city) {
+        try {
+            val url = String.format("https://api.openweathermap.org/data/2.5/weatherList?q=%s&units=metric&appid=%s",
+                    city, apiKey);
+            OpenWeatherDto dto = restTemplate.getForObject(url, OpenWeatherDto.class);
+            return toModel(dto);
+        } catch (Exception e) {
+            return Weather.empty();
+        }
     }
 
-    private Weather toModel(OpenWeatherDto dto, String city) {
-        return new Weather("OpenWeather", city, dto.getMain().getTemperature());
+    private Weather toModel(OpenWeatherDto dto) {
+        return new Weather("OpenWeather", dto.getMain().getTemperature());
     }
 }
