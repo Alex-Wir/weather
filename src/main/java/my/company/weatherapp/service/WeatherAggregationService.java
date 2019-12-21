@@ -13,14 +13,22 @@ import java.util.stream.Collectors;
 public class WeatherAggregationService {
 
     private final List<WeatherService> weatherServices;
+    private final WeatherCache weatherCache;
 
     public CityWeather getWeather(String city) {
+        List<Weather> weatherList = weatherCache.getValue(city)
+                .orElseGet(() -> requestServices(city));
+        return new CityWeather(city, weatherList);
+    }
+
+    private List<Weather> requestServices(String city) {
         List<Weather> weatherList = weatherServices
                 .stream()
                 .map(ws -> ws.getWeather(city))
                 .filter(this::notEmpty)
                 .collect(Collectors.toList());
-        return new CityWeather(city, weatherList);
+        weatherCache.putValue(city, weatherList);
+        return weatherList;
     }
 
     private boolean notEmpty(Weather weather) {
